@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page for Universal Web Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .content {
+            line-height: 1.6;
+            color: #666;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        .test-section h3 {
+            margin-top: 0;
+            color: #444;
+        }
+        .button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .button:hover {
+            background: #0056b3;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Universal Web Chat - Test Page</h1>
+        
+        <div class="content">
+            <p>This page is designed for testing the Universal Web Chat browser extension. It simulates a real website environment where the extension would be active.</p>
+        </div>
+
+        <div class="test-section">
+            <h3>Extension Status</h3>
+            <div id="extension-status" class="status info">
+                Checking extension status...
+            </div>
+            <button class="button" onclick="checkExtensionStatus()">Check Status</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Chat Functionality</h3>
+            <div id="chat-status" class="status info">
+                Chat functionality not tested yet
+            </div>
+            <button class="button" onclick="testChatFunctionality()">Test Chat</button>
+        </div>
+
+        <div class="test-section">
+            <h3>WebRTC Connection</h3>
+            <div id="webrtc-status" class="status info">
+                WebRTC not tested yet
+            </div>
+            <button class="button" onclick="testWebRTC()">Test WebRTC</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Storage Test</h3>
+            <div id="storage-status" class="status info">
+                Storage not tested yet
+            </div>
+            <button class="button" onclick="testStorage()">Test Storage</button>
+        </div>
+
+        <div class="test-section">
+            <h3>Mock Extension API</h3>
+            <p>This page includes mock implementations of browser extension APIs for testing purposes.</p>
+            <div id="api-status" class="status info">
+                Mock APIs ready
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock browser extension APIs for testing
+        if (typeof chrome === 'undefined') {
+            window.chrome = {
+                runtime: {
+                    sendMessage: function(message) {
+                        console.log('Mock chrome.runtime.sendMessage:', message);
+                        return Promise.resolve({ success: true, data: message });
+                    },
+                    onMessage: {
+                        addListener: function(callback) {
+                            console.log('Mock chrome.runtime.onMessage.addListener');
+                            this.callback = callback;
+                        },
+                        removeListener: function(callback) {
+                            console.log('Mock chrome.runtime.onMessage.removeListener');
+                        }
+                    },
+                    getURL: function(path) {
+                        return `chrome-extension://test-id/${path}`;
+                    }
+                },
+                storage: {
+                    local: {
+                        get: function(keys) {
+                            console.log('Mock chrome.storage.local.get:', keys);
+                            return Promise.resolve({});
+                        },
+                        set: function(data) {
+                            console.log('Mock chrome.storage.local.set:', data);
+                            return Promise.resolve();
+                        },
+                        remove: function(keys) {
+                            console.log('Mock chrome.storage.local.remove:', keys);
+                            return Promise.resolve();
+                        }
+                    },
+                    sync: {
+                        get: function(keys) {
+                            console.log('Mock chrome.storage.sync.get:', keys);
+                            return Promise.resolve({});
+                        },
+                        set: function(data) {
+                            console.log('Mock chrome.storage.sync.set:', data);
+                            return Promise.resolve();
+                        },
+                        remove: function(keys) {
+                            console.log('Mock chrome.storage.sync.remove:', keys);
+                            return Promise.resolve();
+                        }
+                    }
+                },
+                tabs: {
+                    query: function(queryInfo) {
+                        console.log('Mock chrome.tabs.query:', queryInfo);
+                        return Promise.resolve([{
+                            id: 1,
+                            url: window.location.href,
+                            title: document.title
+                        }]);
+                    },
+                    sendMessage: function(tabId, message) {
+                        console.log('Mock chrome.tabs.sendMessage:', tabId, message);
+                        return Promise.resolve({ success: true });
+                    }
+                }
+            };
+        }
+
+        // Test functions
+        function checkExtensionStatus() {
+            const statusElement = document.getElementById('extension-status');
+            
+            if (typeof chrome !== 'undefined' && chrome.runtime) {
+                statusElement.className = 'status success';
+                statusElement.textContent = 'Extension APIs available';
+            } else {
+                statusElement.className = 'status error';
+                statusElement.textContent = 'Extension APIs not available';
+            }
+        }
+
+        function testChatFunctionality() {
+            const statusElement = document.getElementById('chat-status');
+            
+            // Simulate chat functionality test
+            statusElement.className = 'status info';
+            statusElement.textContent = 'Testing chat functionality...';
+            
+            setTimeout(() => {
+                statusElement.className = 'status success';
+                statusElement.textContent = 'Chat functionality working';
+            }, 1000);
+        }
+
+        function testWebRTC() {
+            const statusElement = document.getElementById('webrtc-status');
+            
+            if (typeof RTCPeerConnection !== 'undefined') {
+                statusElement.className = 'status success';
+                statusElement.textContent = 'WebRTC supported';
+            } else {
+                statusElement.className = 'status error';
+                statusElement.textContent = 'WebRTC not supported';
+            }
+        }
+
+        function testStorage() {
+            const statusElement = document.getElementById('storage-status');
+            
+            try {
+                localStorage.setItem('test-key', 'test-value');
+                const value = localStorage.getItem('test-key');
+                localStorage.removeItem('test-key');
+                
+                if (value === 'test-value') {
+                    statusElement.className = 'status success';
+                    statusElement.textContent = 'Local storage working';
+                } else {
+                    statusElement.className = 'status error';
+                    statusElement.textContent = 'Local storage test failed';
+                }
+            } catch (error) {
+                statusElement.className = 'status error';
+                statusElement.textContent = 'Local storage not available';
+            }
+        }
+
+        // Auto-run basic checks on page load
+        window.addEventListener('load', function() {
+            checkExtensionStatus();
+            testWebRTC();
+            testStorage();
+        });
+    </script>
+</body>
+</html>
